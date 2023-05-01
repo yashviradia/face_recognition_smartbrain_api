@@ -5,6 +5,20 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
+const knex = require('knex')
+
+knex({
+    client: 'pg',
+    connection: {
+        host : '127.0.0.1',
+        port : 3306,
+        user : 'recognizerx',
+        password : '',
+        database : 'smart-brain'
+    }
+});
+  
+
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';
 const someOtherPlaintextPassword = 'not_bacon';
@@ -38,7 +52,12 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-    res.json('signing');
+    if (req.body.email === database.users[0].email && 
+        req.body.password === database.users[0].password) {
+            res.json("success");
+        } else {
+            res.status(400).json("error logging in.")
+        }
 });
 
 app.post('/register', (req, res) => {
@@ -69,7 +88,7 @@ app.get('/profile/:id', (req, res) => {
     })
 });
 
-app.post('/image', (res, req) => {
+app.put('/image', (res, req) => {
     const { id } = req.body;
     let found = false;
     database.users.forEach(user => {
